@@ -19,9 +19,14 @@ for m = 1:(length(year)-1)
     % Calculate delDIC 
     delDIC(m+1,1) = year(m+1);
    
+    % Perhaps equation (3) from Joos (1996) page 401
+    % perturbation of DIC in surface ocean
     delDIC(m+1,2) = (c/h)*w(m)*dt; % change in DIC
 
     %Calculate dpCO2s from DIC - from Joos 1996
+    % Equation (6b) in Joos (1996) page 402
+    % relationship between perturbation of DIC in surface ocean and partial
+    % pressure of surface ocean water
     dpCO2s(m+1,2) = (1.5568 - (1.3993E-2)*T)*delDIC(m+1,2) + (7.4706-0.20207*T)*10^(-3)*...
         (delDIC(m+1,2))^2 - (1.2748-0.12015*T)*10^(-5)*(delDIC(m+1,2))^3 + (2.4491-0.12639*T)...
         *10^(-7)*(delDIC(m+1,2))^4 - (1.5468-0.15326*T)*10^(-10)*(delDIC(m+1,2))^5;
