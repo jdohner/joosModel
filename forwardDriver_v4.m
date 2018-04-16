@@ -10,7 +10,8 @@ clear all
 LU = 1; % 1 for high land use, 2 for low land use
 start_year = 1850;
 end_year = 2020;
-dt = 1/12;
+ts = 12;
+dt = 1/ts;
 
 year = start_year:dt:end_year;
 
@@ -25,8 +26,8 @@ kg = 1/9.06; % gas exchange rate, yr^-1, from Joos 1996
 beta = 0.287; % fertilization factor
 co2_preind = 280;
 
-[t,r] = HILDAresponse(year);
-[ff, LU, LUex] = getSourceSink(year,ts);
+[t,r] = HILDAResponse(year);
+[ff, LU, LUex] = getSourceSink3(year,ts);
 
 
 %% the motherloop
