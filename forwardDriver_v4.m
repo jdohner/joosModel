@@ -26,8 +26,22 @@ kg = 1/9.06; % gas exchange rate, yr^-1, from Joos 1996
 beta = 0.287; % fertilization factor
 co2_preind = 280;
 
-[t,r] = HILDAResponse(year);
+[t,r,rdecay] = HILDAResponse(year);
 [ff, LU, LUex] = getSourceSink3(year,ts);
+
+%% initialize vectors
+% dpCO2a is the change in atmospheric CO2 from preindustrial value
+dtdelpCO2a = zeros(length(year),2); 
+dtdelpCO2a(:,1) = year;
+dpCO2a = zeros(length(year),2); 
+dpCO2a(:,1) = year; 
+CO2a = zeros(length(year),2); 
+CO2a(:,1) = year; 
+dpCO2s = zeros(length(dpCO2a),2); % dissolved CO2
+dpCO2s(:,1) = dpCO2a(:,1);
+delDIC = zeros(length(year),2); 
+fas = zeros(length(year),2);
+fas(:,1) = year;
 
 
 %% the motherloop
@@ -53,7 +67,7 @@ for i = 1:length(year)
     w = conv(fas(1:i,2),r(1:i,2));
     v = conv(delfnpp(1:i,2),rdecay(1:i,2));
     
-    if i < length(year2)
+    if i < length(year)
         % Calculate delDIC
         % Joos equation (3)
         delDIC(i+1,1) = year(i+1); 
@@ -82,7 +96,7 @@ for i = 1:length(year)
     
     dtdelpCO2a(i,2) =  ff(i,2) - Aoc*fas(i,2) - delCdt(i,2) +landuse(i,2);
     
-    if i < length(year2)
+    if i < length(year)
             dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12; 
     end
     

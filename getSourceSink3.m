@@ -15,6 +15,10 @@
 
 function [ff,LU,LUex] = getSourceSink3(year2, ts);
 
+addpath(genpath(...
+    '/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016'));
+
+    
     
 year3 = (year2(1,1):(1/ts):2016)'; % making full data vector thru to 2016
     
