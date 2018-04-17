@@ -45,7 +45,7 @@ LU_higher = csvread('LR_landUse_JDedits_1750-2016.csv');
 LU_2006mo(:,1) = (1765:(1/12):2016)';
 LU_2006mo(:,2) = interp1(LU_higher(:,1),LU_higher(:,12),LU_2006mo(:,1));
 LU_start = find(LU_2006mo(:,1) == year(1)); % start at 1850
-LUhigher = LU_2006mo(LU_start:end,:); % end at end year
+LU_high = LU_2006mo(LU_start:end,:); % end at end year
 
 
 % leaving extratropical land use out of this

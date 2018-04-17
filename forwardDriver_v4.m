@@ -8,11 +8,10 @@
 clear all
 
 LU = 1; % 1 for high land use, 2 for low land use
-start_year = 1800;%1765;%
+start_year = 1765;
 end_year = 2009+(7/12);%2020; %2300;
 ts = 12;
 dt = 1/ts;
-
 year = start_year:dt:end_year;
 
 Aoc = 3.62E14; % surface area of ocean, m^2, from Joos 1996
@@ -24,7 +23,8 @@ beta = 0.287; % fertilization factor
 co2_preind = 278;
 
 [t,r,rdecay] = HILDAResponse(year);
-[ff, LU] = getSourceSink4(year,ts);
+[ff, LU,~] = getSourceSink4(year,ts);
+%[ff, LU,~] = getSourceSink3(year,ts);
 [~,~,CO2a_obs,~] = MLOinterpolate_increment2(ts,start_year,end_year);
 
 % NOTE: load files for fossil fuel, land use and extratropical land use 
