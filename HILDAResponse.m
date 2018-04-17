@@ -49,15 +49,12 @@ for i = 1:length(year)
     if t(i,1) == 0
          rdecay(i,2) = 0; % set first value = 0
     else
-        rdecay(:,2) = 0.70211   *exp(-0.35*t(i,1))+0.013414 ...
+        rdecay(i,2) = 0.70211   *exp(-0.35*t(i,1))+0.013414 ...
                         *exp(-t(i,1)/20)-0.71846 ...
                         *exp(-55*t(i,1)/120)+0.0029323 ...
                         *exp(-t(i,1)/100);
     end
 end
 
-    
-
-% cool, at the end of all of this, t and r are equal to the t and r that
-% are produced in the original LR ocean model code
+  
 end

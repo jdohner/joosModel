@@ -8,8 +8,8 @@
 clear all
 
 LU = 1; % 1 for high land use, 2 for low land use
-start_year = 1850;
-end_year = 2020;
+start_year = 1800;%1765;%
+end_year = 2009+(7/12);%2020; %2300;
 ts = 12;
 dt = 1/ts;
 
@@ -24,46 +24,42 @@ h = 75; % mixed layer depth, m, from Joos 1996
 T_const = 18.2; % surface temperature, deg C, from Joos 1996
 kg = 1/9.06; % gas exchange rate, yr^-1, from Joos 1996
 beta = 0.287; % fertilization factor
-co2_preind = 280;
+co2_preind = 278;
 
 [t,r,rdecay] = HILDAResponse(year);
 [ff, LU, LUex] = getSourceSink3(year,ts);
 
 %% initialize vectors
-% dpCO2a is the change in atmospheric CO2 from preindustrial value
+
 dtdelpCO2a = zeros(length(year),2); 
 dtdelpCO2a(:,1) = year;
-dpCO2a = zeros(length(year),2); 
+dpCO2a = zeros(length(year),2); %change in CO2a from preind
 dpCO2a(:,1) = year; 
-CO2a = zeros(length(year),2); 
-CO2a(:,1) = year; 
 dpCO2s = zeros(length(dpCO2a),2); % dissolved CO2
 dpCO2s(:,1) = dpCO2a(:,1);
 delDIC = zeros(length(year),2); 
 fas = zeros(length(year),2);
 fas(:,1) = year;
-
+delfnpp = zeros(length(year),2);
+delfnpp(:,1) = year;
+delfdecay = zeros(length(year),2);
+delfdecay(:,1) = year;
+ffer = zeros(length(year),2);
+ffer(:,1) = year;
+CO2a = zeros(length(year),2); 
+CO2a(:,1) = year; 
+CO2a(1,1) = year(1); % intialize first CO2a value
+CO2a(1,2) = co2_preind;
 
 %% the motherloop
 
-for i = 1:length(year)
-    
-    % ocean calcs
+for i = 1:length(year)-1
     
     % calculate air-sea flux
     fas(i,1) = year(i);
     fas(i,2) = (kg/Aoc)*(dpCO2a(i,2) - dpCO2s(i,2)); % air-sea flux of CO2
-    
-    % calculate NPP perturbation
-    delfnpp(i,1) = year(i);
-    delfnpp(i,2) = 60*beta*log(CO2a(i,2)/278);
-    
+
     % convolve the air-sea flux and the pulse response function (Joos 1996)
-    % Note: LR convolves fas and r to do the integral calculation for
-    % equation 3 in Joos. I'm trying the same thing for calculating
-    % the integral in equation 16, but the worrisome difference is that the
-    % integration bounds for equation 3 are t_0 to t, whereas the bounds in
-    % equation 16 are negative infinity to t.
     w = conv(fas(1:i,2),r(1:i,2));
     v = conv(delfnpp(1:i,2),rdecay(1:i,2));
     
@@ -79,35 +75,35 @@ for i = 1:length(year)
             (1.2748-0.12015*T_const)*10^(-5)*(delDIC(i+1,2))^3 + ...
             (2.4491-0.12639*T_const)*10^(-7)*(delDIC(i+1,2))^4 - ...
             (1.5468-0.15326*T_const)*10^(-10)*(delDIC(i+1,2))^5;
+        
+        % calculate NPP perturbation
+        delfnpp(i+1,2) = 60*beta*log(CO2a(i,2)/278);
+        delfdecay(i+1,2) = v(i)*dt; 
+        ffer(i+1,2) = delfnpp(i+1,2) - delfdecay(i+1,2);
     end
     
     % land calcs
     % equation 17 (page 412)
     % assumption that NPP depends logarithmically on atmospheric CO2
     % in units of ppm/yr
-    
-    delfdecay(i+1,1) = year(i+1);
-    delfdecay(i+1,2) = delfnpp(i+1)-v(i)*dt; % only issue is that this doesn't go from neg infinity maybe?
-    % other options for integral: syms, erf
 
-    
-    ffer(i,2) = delfnpp(i,2) + delfdecay(i,2);
-
-    
-    dtdelpCO2a(i,2) =  ff(i,2) - Aoc*fas(i,2) - delCdt(i,2) +landuse(i,2);
+    dtdelpCO2a(i,2) =  ff(i,2) - Aoc*fas(i,2) - ffer(i,2) + LU(i,2);
     
     if i < length(year)
-            dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12; 
+            dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12;
+            CO2a(i+1,2) = dpCO2a(i,2) + CO2a(1,2);
     end
     
-        % calculate CO2a
-    CO2a(i,1) = year(i);
-    CO2a(i,2) = dpCO2a(i,2) + co2_preind;
+%     if i > 1
+%         % calculate CO2a
+%         CO2a(i,1) = year(i);
+%         %CO2a(i,2) = dpCO2a(i,2) + CO2a(i,2);
+%     end
 
 end
 
 % calculate final time points
 % make sure sign convention is consistent
 
-    
+%     
 %% plotting
