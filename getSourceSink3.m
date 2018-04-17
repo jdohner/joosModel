@@ -27,7 +27,7 @@ year3 = (year2(1,1):(1/ts):2016)'; % making full data vector thru to 2016
 % both vectors begin in 1800
 LU_2006 = csvread('landUse_1800-2006.csv');
 LUex_2000 = csvread('landUseExtra_1800-2000.csv');
-load fossilFuel_1751-2009.mat;
+load fossilFuel_1751-2009.mat; % 1751-2009.9
 FF_2009 = ff1; % already monthly resolution
 
 % shortening ff vector to begin at start_year (have data back thru 1700)

@@ -15,9 +15,6 @@ dt = 1/ts;
 
 year = start_year:dt:end_year;
 
-% ff data - load_fossil2.m
-% LU data - BP_extrap_CDIAC_data_2009
-
 Aoc = 3.62E14; % surface area of ocean, m^2, from Joos 1996
 c = 1.722E17; % unit converter, umol m^3 ppm^-1 kg^-1, from Joos 1996
 h = 75; % mixed layer depth, m, from Joos 1996
@@ -27,8 +24,11 @@ beta = 0.287; % fertilization factor
 co2_preind = 278;
 
 [t,r,rdecay] = HILDAResponse(year);
-[ff, LU, LUex] = getSourceSink3(year,ts);
+[ff, LU] = getSourceSink4(year,ts);
 [~,~,CO2a_obs,~] = MLOinterpolate_increment2(ts,start_year,end_year);
+
+% NOTE: load files for fossil fuel, land use and extratropical land use 
+% emissions here if using forward projections
 
 %% initialize vectors
 
@@ -57,49 +57,30 @@ CO2a(1,2) = co2_preind;
 for i = 1:length(year)-1
     
     % calculate air-sea flux
-    fas(i,1) = year(i);
-    fas(i,2) = (kg/Aoc)*(dpCO2a(i,2) - dpCO2s(i,2)); % air-sea flux of CO2
+    fas(i,2) = (kg/Aoc)*(dpCO2a(i,2) - dpCO2s(i,2)); 
 
-    % convolve the air-sea flux and the pulse response function (Joos 1996)
-    w = conv(fas(1:i,2),r(1:i,2));
-    v = conv(delfnpp(1:i,2),rdecay(1:i,2));
-    
-    if i < length(year)
-        % Calculate delDIC
-        % Joos equation (3)
-        delDIC(i+1,1) = year(i+1); 
-        delDIC(i+1,2) = (c/h)*w(i)*dt; % change in DIC
+    w = conv(fas(1:i,2),r(1:i,2)); % Eq. 3 (Joos '96)
+    v = conv(delfnpp(1:i,2),rdecay(1:i,2)); % Eq. 16 (Joos '96)
 
-        %Calculate dpCO2s from DIC - from Joos 1996
-        dpCO2s(i+1,2) = (1.5568 - (1.3993E-2)*T_const)*delDIC(i+1,2) + ...
-            (7.4706-0.20207*T_const)*10^(-3)*(delDIC(i+1,2))^2 - ...
-            (1.2748-0.12015*T_const)*10^(-5)*(delDIC(i+1,2))^3 + ...
-            (2.4491-0.12639*T_const)*10^(-7)*(delDIC(i+1,2))^4 - ...
-            (1.5468-0.15326*T_const)*10^(-10)*(delDIC(i+1,2))^5;
-        
-        % calculate NPP perturbation
-        delfnpp(i+1,2) = 60*beta*log(CO2a(i,2)/278);
-        delfdecay(i+1,2) = v(i)*dt; 
-        ffer(i+1,2) = delfnpp(i+1,2) - delfdecay(i+1,2);
-    end
-    
-    % land calcs
-    % equation 17 (page 412)
-    % assumption that NPP depends logarithmically on atmospheric CO2
-    % in units of ppm/yr
+    % calculate change in DIC
+    delDIC(i+1,2) = (c/h)*w(i)*dt; % Eq. 3 (Joos '96)
 
-    dtdelpCO2a(i,2) =  ff(i,2) - Aoc*fas(i,2) - ffer(i,2) + LU(i,2);
-    
-    if i < length(year)
-            dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12;
-            CO2a(i+1,2) = dpCO2a(i,2) + CO2a(1,2);
-    end
-    
-%     if i > 1
-%         % calculate CO2a
-%         CO2a(i,1) = year(i);
-%         %CO2a(i,2) = dpCO2a(i,2) + CO2a(i,2);
-%     end
+    %Calculate dpCO2s from DIC - Eq. 6b (Joos '96)
+    dpCO2s(i+1,2) = (1.5568 - (1.3993E-2)*T_const)*delDIC(i+1,2) + ...
+        (7.4706-0.20207*T_const)*10^(-3)*(delDIC(i+1,2))^2 - ...
+        (1.2748-0.12015*T_const)*10^(-5)*(delDIC(i+1,2))^3 + ...
+        (2.4491-0.12639*T_const)*10^(-7)*(delDIC(i+1,2))^4 - ...
+        (1.5468-0.15326*T_const)*10^(-10)*(delDIC(i+1,2))^5;
+
+    % calculate NPP perturbation
+    delfnpp(i+1,2) = 60*beta*log(CO2a(i,2)/278); % Eq. 17 (Joos '96)
+    delfdecay(i+1,2) = v(i)*dt; % Eq. 16 (Joos '96)
+    ffer(i+1,2) = delfnpp(i+1,2) - delfdecay(i+1,2); % Eq. 16 (Joos '96)
+
+    % dtdelpCO2a = annual change in atmospheric CO2
+    dtdelpCO2a(i,2) =  ff(i,2) - Aoc*fas(i,2) - ffer(i,2) + LU(i,2); % Eq. 4 (Joos '96)
+    dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12; % change in atmospheric co2 from preind
+    CO2a(i+1,2) = dpCO2a(i,2) + CO2a(1,2); % modeled atmospheric co2 record
 
 end
 
