@@ -11,18 +11,16 @@ load co2_2011_2.mat
 
 dt = 1/ts; 
 
+%% not using meure record for now
 %% processing data for co2 up to 2011 (in keeping with LR original code)
-% loads in mlospo_meure (4427x2)
-% starts 1640
-% ends Feb 2010
+% loads in mlospo_meure (4427x2), 1640-Feb 2010, monthly
 meure_years = mlospo_meure(:,1);
 mlostart = mlospo_meure(1,1);
 mloend = mlospo_meure(end,1);
-
 meure_CO2 = mlospo_meure(:,2);
 
 % Create new time array
-meureInterp_years = [mlostart:1/ts:mloend];
+meureInterp_years = mlostart:1/ts:mloend;
 
 % Do interpolation
 meureInterp_CO2 = interp1(meure_years,meure_CO2,meureInterp_years,'spline');
@@ -30,19 +28,20 @@ meureInterp_CO2 = interp1(meure_years,meure_CO2,meureInterp_years,'spline');
 MLOSPOiceinterp(:,1) = meureInterp_years; % ends Feb 2010
 MLOSPOiceinterp(:,2) = meureInterp_CO2;
 
+% seems super similar to merged co2 2016 record below
+
 %% everything past where co2_2011 ends
 
 % starts at year 1, incremented by year
 CO2_2016 = csvread('mergedCO2_2016.csv');
-year_2016 = (start_year:1/ts:CO2_2016(end,1))';
+year_2016 = (CO2_2016(1,1):1/ts:CO2_2016(end,1))';
 CO2_2016mo(:,1) = year_2016;
 CO2_2016mo(:,2) = (interp1(CO2_2016(:,1),CO2_2016(:,2),year_2016)).';
 
 % joinYear is 2010 + 2/12 (i.e. March 2010)
 joinYear = MLOSPOiceinterp(end,1)+(1/24); % this brings us from 2010+(3/24) (i.e. Feb 2010) to March 2010 (starting at 2010+2/12)
-i = find(floor(100*CO2_2016mo(:,1)) == floor(100*joinYear)); 
+i = find(CO2_2016mo(:,1) >= joinYear,1);
 year_full(:,1) = [MLOSPOiceinterp(:,1) ; CO2_2016mo(i:end,1)];
-
 
 % starts at beginning of MLOSPO, ends at end of 2016 record
 co2_combine(:,1) = year_full; 
@@ -59,17 +58,14 @@ for n = ((ts/2)+1):(length(co2_combine)-(ts/2))
 end
 
 year = start_year:dt:end_year;
-i1 = find(floor(10*co2_combine(:,1)) == floor(10*start_year)); % confusing but this needs to be *10, not *100
-%%%% fix this!!!!! j1
-j1 = find(floor(10*co2_combine(:,1)) == floor(10*end_year));
+i1 = find(co2_combine(:,1) >= start_year,1);
+j1 = find(co2_combine(:,1) >= end_year);
 co2_trunc = co2_combine(i1:j1,:);
 
 %% Calculate change in atmospheric concentration
 dpCO2a(:,1) = co2_trunc(:,1); 
 dpCO2a(:,2) = co2_trunc(:,2)-co2_trunc(1,2);
 
-%m = find(co2_combine(:,1) == start_year);
-n = find(floor(100*(co2_combine(:,1)-(1/24))) == floor(100*end_year));
-m = find(ceil(100*(co2_combine(:,1)-(1/24))) == floor(100*start_year));
-%n = find(ceil(100*(co2_combine(:,1)-(1/24))) == floor(100*end_year));
+n = find(co2_combine(:,1) >= end_year,1);
+m = find(co2_combine(:,1) >= start_year,1);
 co2_combine_trunc = co2_combine(m:n,:);

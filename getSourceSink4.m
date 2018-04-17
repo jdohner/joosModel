@@ -16,18 +16,19 @@ addpath(genpath(...
     '/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016/JDfiles'));
 
 FF_2016 = csvread('GCP_FFann_1751-2016.csv'); % in gigatons/year
-LU_2016 = csvread('Houghton_LUann_1850-2016_2.csv');
+LU_2016 = csvread('Houghton_LUann_1850-2016_2.csv'); % in gigatons/year
 
 d = 1/2.31; % 1 ppm CO2 = 2.31 gton CO2
 
 % interpolate to monthly
 FF_2016mo(:,1) = (1765:(1/ts):FF_2016(end,1))';
-FF_2016mo_0 = (interp1(FF_2016(:,1),FF_2016(:,2),FF_2016mo(:,1))).';
-FF_2016mo(:,2) = FF_2016mo_0*d; %convert to ppm
+FF_2016mo(:,2) = (interp1(FF_2016(:,1),FF_2016(:,2),FF_2016mo(:,1)));
+FF_2016mo(:,2) = FF_2016mo(:,2)*d; %convert to ppm
 
 % set LU = 0 in 1765, interpolated back
 LU_2016mo(:,1) = (1765:(1/ts):LU_2016(end,1))';
 LU_2016mo(:,2) = interp1(LU_2016(:,1),LU_2016(:,2),LU_2016mo(:,1));
+LU_2016mo(:,2) = LU_2016mo(:,2)*d; % convert to ppm
 
 % shorten datasets to match time frame of year vector (currently thru 2016)
 FF_end = find(FF_2016mo(:,1) == year(end));
