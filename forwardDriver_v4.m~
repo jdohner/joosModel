@@ -109,7 +109,4 @@ end
 %% plotting
 
 figure
-plot(ff(:,1),ff(:,2),fas(:,1),Aoc*fas(:,2),ffer(:,1),ffer(:,2),LU(:,1),LU(:,2),dtdelpCO2a(:,1),dtdelpCO2a(:,2))
-legend('fossil fuels','air-sea flux','additional land sink','land use','change in atmospheric co2','location','northwest')
-ylabel('ppm/yr')
-xlabel('year')
+plot(ff(:,1),ff(:,2),fas(:,1),Aoc*
