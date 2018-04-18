@@ -7,8 +7,8 @@
 
 clear all
 
-start_year = 1850;
-end_year = 2009+(7/12);
+start_year = 1800;
+end_year = 2016;%9+(7/12);
 ts = 12;
 dt = 1/ts;
 year = start_year:dt:end_year;
@@ -19,11 +19,13 @@ h = 75; % mixed layer depth, m, from Joos 1996
 T_const = 18.2; % surface temperature, deg C, from Joos 1996
 kg = 1/9.06; % gas exchange rate, yr^-1, from Joos 1996
 beta = 0.287; % fertilization factor
-co2_preind = 278;
+co2_preind = 283; % 278 in Joos, but tweaking to match observed record
+c1 = 0.95; % ocean sink scaling factor
+c2 = 0; % land sink scaling factor
 
 [t,r,rdecay] = HILDAResponse(year);
-%[ff, LU,~] = getSourceSink4(year,ts);
-[ff, LU,~] = getSourceSink3(year,ts);
+[ff, LU,~] = getSourceSink4(year,ts);
+%[ff, LU,~] = getSourceSink3(year,ts);
 [~,~,CO2a_obs,~] = getObservedCO2(ts,start_year,end_year);
 
 % NOTE: load files for fossil fuel, land use and extratropical land use 
@@ -67,12 +69,12 @@ for i = 1:length(year)-1
         (1.5468-0.15326*T_const)*10^(-10)*(delDIC(i+1,2))^5;
 
     % calculate NPP perturbation
-    delfnpp(i+1,2) = 60*beta*log(CO2a(i,2)/278); % Eq. 17 (Joos '96)
+    delfnpp(i+1,2) = 60*beta*log(CO2a(i,2)/co2_preind); % Eq. 17 (Joos '96)
     delfdecay(i+1,2) = v(i)*dt; % Eq. 16 (Joos '96)
     ffer(i+1,2) = delfnpp(i+1,2) - delfdecay(i+1,2); % Eq. 16 (Joos '96)
 
     % calculate change in atmospheric CO2
-    dtdelpCO2a(i,2) =  ff(i,2) + LU(i,2) - Aoc*fas(i,2) - ffer(i,2) ; % Eq. 4 (Joos '96)
+    dtdelpCO2a(i,2) =  ff(i,2) + LU(i,2) - c1*Aoc*fas(i,2) - c2*ffer(i,2) ; % Eq. 4 (Joos '96)
     dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12; 
     CO2a(i+1,2) = dpCO2a(i,2) + CO2a(1,2); 
     sumCheck(i,2) = dtdelpCO2a(i,2)+Aoc*fas(i,2)+ffer(i,2)-LU(i,2)-ff(i,2);
@@ -90,9 +92,11 @@ plot(ff(:,1),ff(:,2),fas(:,1),Aoc*fas(:,2),ffer(:,1),ffer(:,2),LU(:,1),LU(:,2),d
 legend('fossil fuels','air-sea flux','additional land sink','land use','change in atmospheric co2','location','northwest')
 ylabel('ppm/yr')
 xlabel('year')
+grid
 
 figure
 plot(CO2a_obs(:,1),CO2a_obs(:,2),CO2a(:,1),CO2a(:,2));
 legend('observed atmospheric co2','calculated atmospheric co2','location','northwest')
 ylabel('ppm')
 xlabel('year')
+grid
