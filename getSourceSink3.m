@@ -97,11 +97,13 @@ ff(i_2009+1:end,2) = FF_2016mo(startdate_2016+1:end,2);
 
 
 %% shorten datasets to match time frame of year vector
-
+FF_start = find(ff(:,1) == year2(1));
 FF_end = find(ff(:,1) == year2(end));
-ff = ff(1:FF_end,:);
+ff = ff(FF_start:FF_end,:);
+LU_start = find(LU(:,1) == year2(1));
 LU_end = find(LU(:,1) == year2(end));
-LU = LU(1:LU_end,:);
+LU = LU(LU_start:LU_end,:);
+LUex_start = find(LUex(:,1) == year2(1));
 LUex_end = find(LUex(:,1) == year2(end));
-LUex = LUex(1:LUex_end,:);
+LUex = LUex(LUex_start:LUex_end,:);
 

@@ -32,10 +32,12 @@ LU_2016mo(:,2) = interp1(LU_2016(:,1),LU_2016(:,2),LU_2016mo(:,1));
 LU_2016mo(:,2) = LU_2016mo(:,2)*d; % convert to ppm
 
 % shorten datasets to match time frame of year vector (currently thru 2016)
+FF_start = find(FF_2016mo(:,1) == year(1));
 FF_end = find(FF_2016mo(:,1) == year(end));
-ff = FF_2016mo(1:FF_end,:);
+ff = FF_2016mo(FF_start:FF_end,:);
+LU_start = find(LU_2016mo(:,1) == year(1));
 LU_end = find(LU_2016mo(:,1) == year(end));
-LU = LU_2016mo(1:LU_end,:);
+LU = LU_2016mo(LU_start:LU_end,:);
 
 %% LU 2006 (other record)
 

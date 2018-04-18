@@ -71,9 +71,8 @@ for i = 1:length(year)-1
     delfdecay(i+1,2) = v(i)*dt; % Eq. 16 (Joos '96)
     ffer(i+1,2) = delfnpp(i+1,2) - delfdecay(i+1,2); % Eq. 16 (Joos '96)
 
-    %ff(i,2)
     % calculate change in atmospheric CO2
-    dtdelpCO2a(i,2) =  ff(i,2) ;%+ LU(i,2);%- Aoc*fas(i,2) - ffer(i,2) ; % Eq. 4 (Joos '96)
+    dtdelpCO2a(i,2) =  ff(i,2) + LU(i,2) - Aoc*fas(i,2) - ffer(i,2) ; % Eq. 4 (Joos '96)
     dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12; 
     CO2a(i+1,2) = dpCO2a(i,2) + CO2a(1,2); 
     sumCheck(i,2) = dtdelpCO2a(i,2)+Aoc*fas(i,2)+ffer(i,2)-LU(i,2)-ff(i,2);
@@ -82,7 +81,7 @@ end
 
 % calculate final time points
 fas(end,2) = (kg/Aoc)*(dpCO2a(end,2) - dpCO2s(end,2)); 
-%dtdelpCO2a(end,2) =  ff(end,2) - Aoc*fas(end,2) - ffer(end,2) + LU(end,2); 
+dtdelpCO2a(end,2) =  ff(end,2) - Aoc*fas(end,2) - ffer(end,2) + LU(end,2); 
      
 %% plotting
 
