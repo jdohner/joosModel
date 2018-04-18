@@ -5,9 +5,9 @@
 % forward model of atmospheric co2 based on joos et al. (1996) ocean and
 % land uptake models
 
-%clear all
+clear all
 
-start_year = 1765;
+start_year = 1850;
 end_year = 2009+(7/12);
 ts = 12;
 dt = 1/ts;
@@ -22,8 +22,8 @@ beta = 0.287; % fertilization factor
 co2_preind = 278;
 
 [t,r,rdecay] = HILDAResponse(year);
-[ff, LU,~] = getSourceSink4(year,ts);
-%[ff, LU,~] = getSourceSink3(year,ts);
+%[ff, LU,~] = getSourceSink4(year,ts);
+[ff, LU,~] = getSourceSink3(year,ts);
 [~,~,CO2a_obs,~] = getObservedCO2(ts,start_year,end_year);
 
 % NOTE: load files for fossil fuel, land use and extratropical land use 
