@@ -5,14 +5,19 @@
 % linear interpolation for this option
 % 1/10/11: add updated CO2 dataset through 2010
         
-function [annincMLOSPO,dpCO2a,co2_combine_trunc,co2_preind] = MLOinterpolate_increment2(ts,start_year,end_year)
+function [annincMLOSPO,dpCO2a,co2_combine_trunc,co2_preind] = getObservedCO2(ts,start_year,end_year)
+
+addpath(genpath(...
+    '/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016'));
+
+addpath(genpath(...
+    '/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016/JDfiles'));
 
 load co2_2011_2.mat
 
 dt = 1/ts; 
 
-%% not using meure record for now
-%% processing data for co2 up to 2011 (in keeping with LR original code)
+% processing data for co2 up to 2011
 % loads in mlospo_meure (4427x2), 1640-Feb 2010, monthly
 meure_years = mlospo_meure(:,1);
 mlostart = mlospo_meure(1,1);

@@ -17,8 +17,6 @@ function [ff,LU,LUex] = getSourceSink3(year2, ts);
 
 addpath(genpath(...
     '/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016'));
-
-    
     
 year3 = (year2(1,1):(1/ts):2016)'; % making full data vector thru to 2016
     
@@ -26,7 +24,7 @@ year3 = (year2(1,1):(1/ts):2016)'; % making full data vector thru to 2016
 
 % both vectors begin in 1800
 LU_2006 = csvread('landUse_1800-2006.csv');
-LUex_2000 = csvread('landUseExtra_1800-2000.csv');
+LUex_2000 = csvread('landUseExtra_1800-2000.csv'); 
 load fossilFuel_1751-2009.mat; % 1751-2009.9
 FF_2009 = ff1; % already monthly resolution
 
@@ -51,8 +49,7 @@ LUex_2000mo = LUex_2000mo(LUex_start:end,:); % end at end year
 LU(:,1) = year3;
 LU(1:length(LU_2006mo),2) = LU_2006mo(:,2);
 LU(length(LU_2006mo)+1:end,2) = LU_2006mo(end,2);
-
-    
+  
 % extend extratropical land use to end_year with zeros thru to latest year
 LUex(:,1) = year3; 
 LUex(1:length(LUex_2000mo),2) = LUex_2000mo(:,2);

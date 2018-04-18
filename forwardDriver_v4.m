@@ -5,11 +5,10 @@
 % forward model of atmospheric co2 based on joos et al. (1996) ocean and
 % land uptake models
 
-clear all
+%clear all
 
-LU = 1; % 1 for high land use, 2 for low land use
 start_year = 1765;
-end_year = 2009+(7/12);%2020; %2300;
+end_year = 2009+(7/12);
 ts = 12;
 dt = 1/ts;
 year = start_year:dt:end_year;
@@ -25,32 +24,26 @@ co2_preind = 278;
 [t,r,rdecay] = HILDAResponse(year);
 [ff, LU,~] = getSourceSink4(year,ts);
 %[ff, LU,~] = getSourceSink3(year,ts);
-[~,~,CO2a_obs,~] = MLOinterpolate_increment2(ts,start_year,end_year);
+[~,~,CO2a_obs,~] = getObservedCO2(ts,start_year,end_year);
 
 % NOTE: load files for fossil fuel, land use and extratropical land use 
 % emissions here if using forward projections
 
-%% initialize vectors
-
-dtdelpCO2a = zeros(length(year),2); 
-dtdelpCO2a(:,1) = year;
-dpCO2a = zeros(length(year),2); %change in CO2a from preind
-dpCO2a(:,1) = year; 
-dpCO2s = zeros(length(dpCO2a),2); % dissolved CO2
-dpCO2s(:,1) = dpCO2a(:,1);
-delDIC = zeros(length(year),2); 
-fas = zeros(length(year),2);
-fas(:,1) = year;
-delfnpp = zeros(length(year),2);
-delfnpp(:,1) = year;
-delfdecay = zeros(length(year),2);
-delfdecay(:,1) = year;
-ffer = zeros(length(year),2);
-ffer(:,1) = year;
-CO2a = zeros(length(year),2); 
-CO2a(:,1) = year; 
+% initialize vectors
+blankVec(:,1) = year;
+blankVec(:,2) = 0;
+dtdelpCO2a = blankVec; % annual change in CO2atm (ppm/yr)
+dpCO2a = blankVec; % change in CO2atm from preindustrial
+dpCO2s = blankVec; % change in dissolved CO2 from preindustrial
+delDIC = blankVec; % change in dissolved inorganic carbon
+fas = blankVec; % air-sea flux
+delfnpp = blankVec; % change in net primary production from added CO2
+delfdecay = blankVec; % change in organic matter decay from added CO2
+ffer = blankVec; % total perturbation (delfnpp + delfdecay) from added CO2
+CO2a = blankVec; % atmospheric CO2
 CO2a(1,1) = year(1); % intialize first CO2a value
 CO2a(1,2) = co2_preind;
+
 
 %% the motherloop
 
@@ -77,17 +70,17 @@ for i = 1:length(year)-1
     delfdecay(i+1,2) = v(i)*dt; % Eq. 16 (Joos '96)
     ffer(i+1,2) = delfnpp(i+1,2) - delfdecay(i+1,2); % Eq. 16 (Joos '96)
 
-    % dtdelpCO2a = annual change in atmospheric CO2
+    % calculate change in atmospheric CO2
     dtdelpCO2a(i,2) =  ff(i,2) - Aoc*fas(i,2) - ffer(i,2) + LU(i,2); % Eq. 4 (Joos '96)
-    dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12; % change in atmospheric co2 from preind
-    CO2a(i+1,2) = dpCO2a(i,2) + CO2a(1,2); % modeled atmospheric co2 record
+    dpCO2a(i+1,2) = dpCO2a(i,2) + dtdelpCO2a(i,2)/12; 
+    CO2a(i+1,2) = dpCO2a(i,2) + CO2a(1,2); 
 
 end
 
 % calculate final time points
-% make sure sign convention is consistent
-
-%     
+fas(end,2) = (kg/Aoc)*(dpCO2a(end,2) - dpCO2s(end,2)); 
+dtdelpCO2a(end,2) =  ff(end,2) - Aoc*fas(end,2) - ffer(end,2) + LU(end,2); 
+     
 %% plotting
 
 figure
