@@ -9,7 +9,7 @@
 % 
 % code from jooshildascale_annotate2.m (aka ocean model driver)
 
-function [t,r,rdecay]= HILDAResponse(year)
+function [t,r,rdecay]= HILDAresponse(year)
 
 % allocating space for t and r matrices before for loop
 

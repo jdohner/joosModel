@@ -23,9 +23,8 @@ co2_preind = 283; % 278 in Joos, but tweaking to match observed record
 c1 = 0.95; % ocean sink scaling factor
 c2 = 0; % land sink scaling factor
 
-[t,r,rdecay] = HILDAResponse(year);
-[ff, LU,~] = getSourceSink4(year,ts);
-%[ff, LU,~] = getSourceSink3(year,ts);
+[t,r,rdecay] = HILDAresponse(year);
+[ff, LU] = getSourceData(year,ts);
 [~,~,CO2a_obs,~] = getObservedCO2(ts,start_year,end_year);
 
 % NOTE: load files for fossil fuel, land use and extratropical land use 
@@ -83,7 +82,7 @@ end
 
 % calculate final time points
 fas(end,2) = (kg/Aoc)*(dpCO2a(end,2) - dpCO2s(end,2)); 
-dtdelpCO2a(end,2) =  ff(end,2) - Aoc*fas(end,2) - ffer(end,2) + LU(end,2); 
+dtdelpCO2a(end,2) =  ff(end,2) + LU(end,2) - c1*Aoc*fas(end,2) - c2*ffer(end,2); 
      
 %% plotting
 
