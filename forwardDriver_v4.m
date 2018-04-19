@@ -7,8 +7,8 @@
 
 clear all
 
-start_year = 1800;
-end_year = 2016;%9+(7/12);
+start_year = 1765;
+end_year = 2016;
 ts = 12;
 dt = 1/ts;
 year = start_year:dt:end_year;
@@ -47,7 +47,8 @@ CO2a(1,2) = co2_preind;
 sumCheck = blankVec;
 
 
-%% the motherloop
+%% loop to calculate change in atmospheric co2 growth rate 
+% calculates for each month by summing sources and sinks
 
 for i = 1:length(year)-1
     

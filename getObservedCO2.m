@@ -7,13 +7,7 @@
         
 function [annincMLOSPO,dpCO2a,co2_combine_trunc,co2_preind] = getObservedCO2(ts,start_year,end_year)
 
-addpath(genpath(...
-    '/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016'));
-
-addpath(genpath(...
-    '/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016/JDfiles'));
-
-load co2_2011_2.mat
+load co2_2011_2.mat % loads mlospo_meure data vector
 
 dt = 1/ts; 
 
@@ -24,10 +18,10 @@ mlostart = mlospo_meure(1,1);
 mloend = mlospo_meure(end,1);
 meure_CO2 = mlospo_meure(:,2);
 
-% Create new time array
+% create new time array
 meureInterp_years = mlostart:1/ts:mloend;
 
-% Do interpolation
+% spline interpolation
 meureInterp_CO2 = interp1(meure_years,meure_CO2,meureInterp_years,'spline');
 
 MLOSPOiceinterp(:,1) = meureInterp_years; % ends Feb 2010

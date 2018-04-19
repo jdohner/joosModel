@@ -15,8 +15,8 @@ function [ff,LU] = getSourceData(year,ts)
 addpath(genpath(...
     '/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016/JDfiles'));
  
-FF_2016 = csvread('FF_Boden_2016.csv'); % in gigatons/year
-LU_2016 = csvread('LU_Houghton_2016.csv'); % in gigatons/year
+FF_2016 = csvread('FFdata_Boden_2016.csv'); % in gigatons/year
+LU_2016 = csvread('LUdata_Houghton_2016.csv'); % in gigatons/year
  
 d = 1/2.31; % 1 ppm CO2 = 2.31 gton CO2
  

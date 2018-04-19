@@ -1,13 +1,9 @@
-% file HILDAResponse.m
+% file HILDAresponse.m
 % 
 % author Julia Dohner, borrowing from Lauren Rafelski
 % 
-% note Be sure to run defaults.m in outer folder before running this code
-% 
-% brief Calculates the response "r" from the HILDA model (A.2.2 in Joos
-% 1996)
-% 
-% code from jooshildascale_annotate2.m (aka ocean model driver)
+% brief Calculates the response "r" from the HILDA model for ocean uptake
+% (A.2.2 in Joos 1996), and decay response "rdecay" (A.3 in Joos 1996)
 
 function [t,r,rdecay]= HILDAresponse(year)
 
@@ -22,13 +18,11 @@ t = NaN(length(year), 1);
 r = NaN(length(year), 2); 
 
 % Response function to calculate ocean uptake
-% year comes from load_fossil2 here
 % A.2.2
 for i = 1:length(year)
-    % each value in first column of t is the year at index i minus first
-    % year
      t(i,1) = year(i) - year(1);
      r(i,1) = t(i,1);
+     
     %Calculate response function based on HILDA equation in Joos 1996
      if t(i,1) == 0
          r(i,2) = 1;
@@ -42,9 +36,12 @@ for i = 1:length(year)
      end
 end
 
+% initialize vector
+rdecay = NaN(length(year), 2); 
+rdecay(:,1) = t;
+
 % A.3 biosphere decay response function
 for i = 1:length(year)
-    rdecay(i,1) = t(i,1);
     
     if t(i,1) == 0
          rdecay(i,2) = 0; % set first value = 0
