@@ -107,6 +107,7 @@ plot(ff(:,1),ff(:,2),fas(:,1),Aoc*fas(:,2),ffer(:,1),ffer(:,2),LU(:,1),LU(:,2),d
 legend('Fossil fuel','Air-sea flux','Land sink','Land use','Change in atmospheric CO2','location','northwest')
 ylabel('ppm/yr')
 xlabel('year')
+title('Sources and Sinks')
 grid
 
 figure
@@ -114,4 +115,5 @@ plot(CO2a_obs(:,1),CO2a_obs(:,2),CO2a(:,1),CO2a(:,2));
 legend('Observed atmospheric CO2','Calculated atmospheric CO2','location','northwest')
 ylabel('ppm')
 xlabel('year')
+title('Modeled vs. Observed CO2')
 grid
