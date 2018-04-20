@@ -1,8 +1,9 @@
-% file HILDAresponse.m
+% HILDAresponse.m
 % 
-% author Julia Dohner, borrowing from Lauren Rafelski
+% Author: Julia Dohner, adapted from Lauren Rafelski
+% April 17, 2018
 % 
-% brief Calculates the response "r" from the HILDA model for ocean uptake
+% Calculates the response "r" from the HILDA model for ocean uptake
 % (A.2.2 in Joos 1996), and decay response "rdecay" (A.3 in Joos 1996)
 
 function [t,r,rdecay]= HILDAresponse(year)
