@@ -4,8 +4,16 @@
 % 
 % forward model of atmospheric co2 based on joos et al. (1996) ocean and
 % land uptake models
-
 clear all
+
+addpath(genpath(...
+'/Users/juliadohner/Documents/MATLAB/joosModel/co2_forward_data_2016/JDfiles'));
+
+% inputs/set parameters
+% include functionality to feed in file names, pass to getSourceData
+% (but not getObservedCO2 - could move this offline, create file that is read in
+% a lot faster, make this separate program)
+
 
 start_year = 1765;
 end_year = 2016;
@@ -13,18 +21,25 @@ ts = 12;
 dt = 1/ts;
 year = start_year:dt:end_year;
 
-Aoc = 3.62E14; % surface area of ocean, m^2, from Joos 1996
-c = 1.722E17; % unit converter, umol m^3 ppm^-1 kg^-1, from Joos 1996
-h = 75; % mixed layer depth, m, from Joos 1996
-T_const = 18.2; % surface temperature, deg C, from Joos 1996
-kg = 1/9.06; % gas exchange rate, yr^-1, from Joos 1996
 beta = 0.287; % fertilization factor
 co2_preind = 283; % 278 in Joos, but tweaking to match observed record
 c1 = 0.95; % ocean sink scaling factor
 c2 = 0; % land sink scaling factor
 
+ff_file = input('Which fossil fuel record?', 's');
+lu_file = input('Which land use record?', 's');
+FF_data = load(ff_file);
+LU_data = load(lu_file);
+
+Aoc = 3.62E14; % surface area of ocean, m^2, from Joos 1996
+c = 1.722E17; % unit converter, umol m^3 ppm^-1 kg^-1, from Joos 1996
+h = 75; % mixed layer depth, m, from Joos 1996
+T_const = 18.2; % surface temperature, deg C, from Joos 1996
+kg = 1/9.06; % gas exchange rate, yr^-1, from Joos 1996
+
+
 [t,r,rdecay] = HILDAresponse(year);
-[ff, LU] = getSourceData(year,ts);
+[ff, LU] = getSourceData(year,ts,FF_data,LU_data);
 [~,~,CO2a_obs,~] = getObservedCO2(ts,start_year,end_year);
 
 % NOTE: load files for fossil fuel, land use and extratropical land use 
